@@ -22,16 +22,15 @@ function DeleteButton() {
   );
 }
 
-export function DeleteMatch({ team1, team2, score1, score2 }: { team1: string; team2: string; score1: string; score2: string }) {
-  // useActionState is available with React 19 (Next.js App Router)
+export function DeleteMatch({ team1_name, team2_name, team1_score, team2_score }: { team1_name: string; team2_name: string; team1_score: string; team2_score: string }) {
   const [state, formAction] = useFormState(deleteMatch, initialState);
 
   return (
     <form action={formAction}>
-      <input type="hidden" name="team1" value={team1} />
-      <input type="hidden" name="team2" value={team2} />
-      <input type="hidden" name="score1" value={score1} />
-      <input type="hidden" name="score2" value={score2} />
+      <input type="hidden" name="team1_name" value={team1_name} />
+      <input type="hidden" name="team2_name" value={team2_name} />
+      <input type="hidden" name="team1_score" value={team1_score} />
+      <input type="hidden" name="team2_score" value={team2_score} />
       <DeleteButton />
       <p aria-live="polite" role="status">
         {state?.message}

@@ -46,15 +46,21 @@ export default function ScoreBoard({ scoreboard }) {
             <tr className="bg-gray-100">
               <th className="px-4 py-2 text-left text-gray-600 font-medium">Team</th>
               <th className="px-4 py-2 text-left text-gray-600 font-medium">Group Number</th>
-              <th className="px-4 py-2 text-left text-gray-600 font-medium">Score</th>
+              <th className="px-4 py-2 text-left text-gray-600 font-medium">registered_date</th>
+              <th className="px-4 py-2 text-left text-gray-600 font-medium">score</th>
+              <th className="px-4 py-2 text-left text-gray-600 font-medium">score_alt</th>
+              <th className="px-4 py-2 text-left text-gray-600 font-medium">total_goals</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {filteredScoreboard.map((row) => (
               <tr key={row.team} className="hover:bg-gray-100 transition duration-300">
-                <td className="px-4 py-2 text-gray-800">{row.team}</td>
+                <td className="px-4 py-2 text-gray-800">{row.team_name}</td>
                 <td className="px-4 py-2 text-gray-600">{row.group_number}</td>
+                <td className="px-4 py-2 text-gray-600">{row.registered_date.slice(0, 2) + '/' + row.registered_date.slice(2, 4)}</td>
                 <td className="px-4 py-2 text-gray-600">{row.score}</td>
+                <td className="px-4 py-2 text-gray-600">{row.score_alt}</td>
+                <td className="px-4 py-2 text-gray-600">{row.total_goals}</td>
               </tr>
             ))}
           </tbody>

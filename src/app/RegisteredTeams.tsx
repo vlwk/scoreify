@@ -47,7 +47,7 @@ export default function RegisteredTeams({ teams }) {
             className="p-4 border border-gray-200 rounded-lg shadow hover:bg-gray-100 transition duration-300"
           >
             <div className="text-lg font-medium text-gray-800">Team Name: {team.team_name}</div>
-            <div className="text-sm text-gray-600">Registered: {team.registered.slice(0, 2)}/{team.registered.slice(2, 4)}</div>
+            <div className="text-sm text-gray-600">Registered: {team.registered_date.slice(0, 2)}/{team.registered_date.slice(2, 4)}</div>
             <div className="text-sm text-gray-600">Group: {team.group_number}</div>
           </li>
         ))}

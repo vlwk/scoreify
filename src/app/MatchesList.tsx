@@ -10,19 +10,19 @@ export default function MatchesList({ matches }) {
       <ul className="space-y-4">
         {matches.map((match) => (
           <li
-            key={`${match.team1}-${match.team2}`}
+            key={`${match.team1_name}-${match.team2_name}`}
             className="p-4 border border-gray-200 rounded-lg shadow hover:bg-gray-100 transition duration-300"
           >
             <div className="flex justify-between items-center">
               <div>
                 <div className="text-lg font-medium text-gray-800">
-                  {match.team1} vs {match.team2}
+                  {match.team1_name} vs {match.team2_name}
                 </div>
                 <div className="text-sm text-gray-600">
-                  Score: {match.score1} - {match.score2}
+                  Score: {match.team1_score} - {match.team2_score}
                 </div>
               </div>
-              <DeleteMatch team1={match.team1} team2={match.team2} score1={match.score1} score2={match.score2} />
+              <DeleteMatch team1_name={match.team1_name} team2_name={match.team2_name} team1_score={match.team1_score} team2_score={match.team2_score} />
             </div>
           </li>
         ))}

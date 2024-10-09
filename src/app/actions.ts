@@ -36,9 +36,9 @@ export async function addTeams(
     try {
       await sql.begin(async (trx) => {
         for (const line of teamLines) {
-          const [team_name, registered, group_numberString] = line.split(" ");
+          const [team_name, registered_date, group_numberString] = line.split(" ");
   
-          if (!regex.test(registered)) {
+          if (!regex.test(registered_date)) {
             throw new Error(`Invalid registration date for team ${team_name}`);
           }
   
@@ -49,29 +49,24 @@ export async function addTeams(
           }
   
           const existingTeams = await trx`
-            SELECT team_name FROM teams WHERE team_name = ${team_name}
+            SELECT team_name FROM scoreboard WHERE team_name = ${team_name}
           `;
           if (existingTeams.length > 0) {
             throw new Error(`Team ${team_name} already exists. Please choose another name.`);
           }
   
           const teamsInGroup = await trx`
-            SELECT COUNT(*) FROM teams WHERE group_number = ${group_number}
+            SELECT COUNT(*) FROM scoreboard WHERE group_number = ${group_number}
           `;
           if (teamsInGroup[0].count >= 6) {
             throw new Error(`Group ${group_number} is full. Maximum 6 teams are allowed.`);
           }
   
-          // Insert into scoreboard and teams table atomically
           await trx`
-            INSERT INTO scoreboard (team, group_number, score)
-            VALUES (${team_name}, ${group_number}, 0)
+            INSERT INTO scoreboard (team_name, group_number, score, score_alt, total_goals, registered_date)
+            VALUES (${team_name}, ${group_number}, 0, 0, 0, ${registered_date.slice(0, 2) + registered_date.slice(3, 5)})
           `;
   
-          await trx`
-            INSERT INTO teams (team_name, registered, group_number)
-            VALUES (${team_name}, ${registered.slice(0, 2) + registered.slice(3, 5)}, ${group_number})
-          `;
         }
       });
   
@@ -113,90 +108,96 @@ export async function addTeams(
       await sql.begin(async (trx) => {
         // Loop through each line and process the matches
         for (const line of matchLines) {
-          var [team1, team2, score1, score2] = line.trim().split(" ");
+          var [team1_name, team2_name, team1_score, team2_score] = line.trim().split(" ");
           
-          if (!team1 || !team2 || !score1 || !score2) {
+          if (!team1_name || !team2_name || !team1_score || !team2_score) {
             throw new Error("Invalid match format. Please ensure all fields are present.");
           }
   
-          if (team1 === team2) {
+          if (team1_name === team2_name) {
             throw new Error("Teams cannot be the same!");
           }
   
-          // If team1 > team2, swap to maintain consistent ordering
-          if (team1 > team2) {
-            [team1, team2] = [team2, team1]; 
-            [score1, score2] = [score2, score1];
+          // If team1_name > team2_name, swap to maintain consistent ordering
+          if (team1_name > team2_name) {
+            [team1_name, team2_name] = [team2_name, team1_name]; 
+            [team1_score, team2_score] = [team2_score, team2_score];
           }
   
-          const score1_number = parseInt(score1, 10);
-          const score2_number = parseInt(score2, 10);
+          const team1_score_number = parseInt(team1_score, 10);
+          const team2_score_number = parseInt(team2_score, 10);
   
-          if (isNaN(score1_number) || isNaN(score2_number)) {
+          if (isNaN(team1_score_number) || isNaN(team2_score_number)) {
             throw new Error("Invalid score number: must be integers!");
           }
   
           // Check if the match already exists
           const existingMatches = await trx`
-            SELECT team1, team2 FROM matches WHERE team1 = ${team1} AND team2 = ${team2}
+            SELECT team1_name, team2_name FROM matches WHERE team1_name = ${team1_name} AND team2_name = ${team2_name}
           `;
-
-          console.log(existingMatches);
   
           if (existingMatches.length > 0) {
-            throw new Error(`Match between ${team1} and ${team2} already exists.`);
+            throw new Error(`Match between ${team1_name} and ${team2_name} already exists.`);
           }
   
           // Check if both teams exist
           const team1Data = await trx`
             SELECT team_name, group_number
-            FROM teams
-            WHERE team_name = ${team1}
+            FROM scoreboard
+            WHERE team_name = ${team1_name}
           `;
           const team2Data = await trx`
             SELECT team_name, group_number
-            FROM teams
-            WHERE team_name = ${team2}
+            FROM scoreboard
+            WHERE team_name = ${team2_name}
           `;
   
           if (team1Data.length === 0 || team2Data.length === 0) {
-            throw new Error(`One or both teams don't exist: ${team1}, ${team2}.`);
+            throw new Error(`One or both teams don't exist: ${team1_name}, ${team2_name}.`);
           }
   
           // Check if they are in the same group
           if (team1Data[0].group_number !== team2Data[0].group_number) {
-            throw new Error(`${team1} and ${team2} are not in the same group.`);
+            throw new Error(`${team1_name} and ${team2_name} are not in the same group.`);
           }
   
           // Insert match into 'matches' table
           await trx`
-            INSERT INTO matches (team1, team2, score1, score2)
-            VALUES (${team1}, ${team2}, ${score1_number}, ${score2_number})
+            INSERT INTO matches (team1_name, team2_name, team1_score, team2_score)
+            VALUES (${team1_name}, ${team2_name}, ${team1_score_number}, ${team2_score_number})
           `;
   
           // Update scoreboard
           let pointsTeam1 = 0;
+          let pointsTeam1Alt = 0;
           let pointsTeam2 = 0;
+          let pointsTeam2Alt = 0;
   
-          if (score1_number > score2_number) {
+          if (team1_score_number > team2_score_number) {
             pointsTeam1 = 3;
-          } else if (score1_number < score2_number) {
+            pointsTeam1Alt = 5;
+            pointsTeam2Alt = 1;
+          } else if (team1_score_number < team2_score_number) {
             pointsTeam2 = 3;
+            pointsTeam2Alt = 5;
+            pointsTeam1Alt = 1;
           } else {
             pointsTeam1 = 1;
             pointsTeam2 = 1;
+            pointsTeam1Alt = 3;
+            pointsTeam2Alt = 3;
           }
   
           await trx`
             UPDATE scoreboard
-            SET score = score + ${pointsTeam1}
-            WHERE team = ${team1}
+            SET score = score + ${pointsTeam1}, score_alt = score_alt + ${pointsTeam1Alt}, total_goals = total_goals + ${team1_score_number} 
+            WHERE team_name = ${team1_name}
           `;
   
           await trx`
             UPDATE scoreboard
-            SET score = score + ${pointsTeam2}
-            WHERE team = ${team2}
+            SET score = score + ${pointsTeam2}, score_alt = score_alt + ${pointsTeam2Alt}, total_goals = total_goals + ${team2_score_number}
+            WHERE team_name = ${team2_name}
           `;
         }
       });
@@ -217,58 +218,65 @@ export async function addTeams(
     formData: FormData,
   ) {
     const schema = z.object({
-      team1: z.string().min(1),
-      team2: z.string().min(1),
-      score1: z.string().min(1),
-      score2: z.string().min(1),
+      team1_name: z.string().min(1),
+      team2_name: z.string().min(1),
+      team1_score: z.string().min(1),
+      team2_score: z.string().min(1),
     });
     const data = schema.parse({
-      team1: formData.get("team1"),
-      team2: formData.get("team2"),
-      score1: formData.get("score1"),
-      score2: formData.get("score2"),
+      team1_name: formData.get("team1_name"),
+      team2_name: formData.get("team2_name"),
+      team1_score: formData.get("team1_score"),
+      team2_score: formData.get("team2_score"),
     });
 
-    const team1 = data.team1;
-    const team2 = data.team2;
-    const score1 = parseInt(data.score1, 10);
-    const score2 = parseInt(data.score2, 10);
-
-    console.log(team1, team2, score1, score2);
+    const team1_name = data.team1_name;
+    const team2_name = data.team2_name;
+    const team1_score_number = parseInt(data.team1_score, 10);
+    const team2_score_number = parseInt(data.team2_score, 10);
   
     try {
 
         await sql.begin(async (trx) => {
-            // Determine match winner and loser
+            
+
             let pointsTeam1 = 0;
+            let pointsTeam1Alt = 0;
             let pointsTeam2 = 0;
-        
-            if (score1 > score2) {
-              pointsTeam1 = 3; // Team 1 wins
-            } else if (score1 < score2) {
-              pointsTeam2 = 3; // Team 2 wins
+            let pointsTeam2Alt = 0;
+    
+            if (team1_score_number > team2_score_number) {
+                pointsTeam1 = 3;
+                pointsTeam1Alt = 5;
+                pointsTeam2Alt = 1;
+            } else if (team1_score_number < team2_score_number) {
+                pointsTeam2 = 3;
+                pointsTeam2Alt = 5;
+                pointsTeam1Alt = 1;
             } else {
-              pointsTeam1 = 1; // Draw
-              pointsTeam2 = 1; // Draw
+                pointsTeam1 = 1;
+                pointsTeam2 = 1;
+                pointsTeam1Alt = 3;
+                pointsTeam2Alt = 3;
             }
         
             // Update leaderboard for Team 1
             await trx`
               UPDATE scoreboard
-              SET score = score - ${pointsTeam1}
-              WHERE team = ${team1}
+              SET score = score - ${pointsTeam1}, score_alt = score_alt - ${pointsTeam1Alt}, total_goals = total_goals - ${team1_score_number}
+              WHERE team_name = ${team1_name}
             `;
         
             // Update leaderboard for Team 2
             await trx`
               UPDATE scoreboard
-              SET score = score - ${pointsTeam2}
-              WHERE team = ${team2}
+              SET score = score - ${pointsTeam2}, score_alt = score_alt - ${pointsTeam2Alt}, total_goals = total_goals - ${team2_score_number}
+              WHERE team_name = ${team2_name}
             `;
 
             await trx`
             DELETE FROM matches 
-            WHERE team1 = ${team1} AND team2 = ${team2}
+            WHERE team1_name = ${team1_name} AND team2_name = ${team2_name}
             `;
           });
     

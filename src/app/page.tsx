@@ -10,7 +10,7 @@ let sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
 });
 
 export default async function Home() {
-  let teams = await sql`SELECT * FROM teams`;
+  let teams = await sql`SELECT team_name, group_number, registered_date FROM scoreboard`;
   let matches = await sql`SELECT * FROM matches`;
   let scoreboard = await sql`SELECT * FROM scoreboard ORDER BY group_number, score DESC`;
 
