@@ -7,6 +7,7 @@ const initialState = {
   message: "",
 };
 
+
 function SubmitButton() {
   const { pending } = useFormStatus();
 
@@ -18,33 +19,27 @@ function SubmitButton() {
 }
 
 export function Form({ action, id, label, hint }) {
-    const [state, formAction] = useFormState(action, initialState);
-  
-    return (
-      <form action={formAction} className="w-full max-w-2xl bg-white shadow-md rounded-lg p-6 space-y-4">
-        <label htmlFor={id} className="block text-gray-700 font-medium">
-          {label}
-        </label>
-        {/* <input
-          type="text"
-          id={id}
-          name={id}
-          required
-          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-        /> */}
+  const [state, formAction] = useFormState(action, initialState);
+
+  return (
+    <div className="bg-white shadow-lg rounded-lg p-6">
+      <form action={formAction}>
+        <h2 className="text-2xl font-semibold mb-4 text-gray-700">{label}</h2>
         <textarea
           id={id}
           name={id}
-          rows={6}  // Set rows for the height of the textarea
+          rows={6} 
           required
           className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
         />
-        <p className="text-sm text-gray-500">{hint}</p>
-        <SubmitButton />
-        <p aria-live="polite" role="status">
+        <p className="mt-4 text-sm text-gray-500">{hint}</p> 
+        <div className="mt-4">
+          <SubmitButton />
+        </div>
+        <p className="mt-4" aria-live="polite" role="status">
           {state?.message}
         </p>
       </form>
-    );
-  }
-  
+    </div>
+  );
+}

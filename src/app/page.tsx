@@ -4,6 +4,7 @@ import postgres from "postgres";
 import RegisteredTeams from './RegisteredTeams';
 import MatchesList from './MatchesList';
 import ScoreBoard from './ScoreBoard';
+import { Control } from './control';
 
 let sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
   ssl: "allow",
@@ -27,6 +28,7 @@ export default async function Home() {
         <MatchForm />
         <MatchesList matches={matches} />
         <ScoreBoard scoreboard={scoreboard} />
+        <Control />
       </main>
 
       <footer className="row-start-3 text-center text-gray-500 text-sm">

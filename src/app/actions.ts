@@ -8,6 +8,37 @@ let sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
   ssl: "allow",
 });
 
+export async function clearAllData(
+    prevState: {
+      message: string;
+    },
+    formData: FormData,
+  ) {
+    
+  
+    try {
+
+        
+      await sql.begin(async (trx) => {
+
+        await trx`
+        TRUNCATE TABLE matches
+      `;
+
+        await trx`
+        TRUNCATE TABLE scoreboard
+        `;
+      });
+  
+      // Revalidate and return success message
+      revalidatePath("/");
+      return { message: "Successfully cleared all data!" };
+    } catch (e) {
+      revalidatePath("/");
+      return { message: `Error: ${e.message}` };
+    }
+  }
+
 export async function addTeams(
     prevState: {
       message: string;
@@ -283,6 +314,111 @@ export async function addTeams(
 
       revalidatePath("/");
       return { message: `Done` };
+    } catch (e) {
+      revalidatePath("/");
+      return { message: "Oops" };
+    }
+  }
+
+  export async function editMatch(
+    prevState: {
+      message: string;
+    },
+    formData: FormData,
+  ) {
+    const schema = z.object({
+      team1_name: z.string().min(1),
+      team2_name: z.string().min(1),
+      team1_score: z.string().min(1),
+      team2_score: z.string().min(1),
+      team1_score_new: z.string().min(1),
+      team2_score_new: z.string().min(1),
+    });
+    const data = schema.parse({
+      team1_name: formData.get("team1_name"),
+      team2_name: formData.get("team2_name"),
+      team1_score: formData.get("team1_score"),
+      team2_score: formData.get("team2_score"),
+      team1_score_new: formData.get("team1_score_new"),
+      team2_score_new: formData.get("team2_score_new"),
+    });
+
+    const team1_name = data.team1_name;
+    const team2_name = data.team2_name;
+    const team1_score_number = parseInt(data.team1_score, 10);
+    const team2_score_number = parseInt(data.team2_score, 10);
+    const team1_score_new_number = parseInt(data.team1_score_new, 10);
+    const team2_score_new_number = parseInt(data.team2_score_new, 10);
+  
+    try {
+
+        await sql.begin(async (trx) => {
+            
+
+            let pointsTeam1 = 0;
+            let pointsTeam1Alt = 0;
+            let pointsTeam2 = 0;
+            let pointsTeam2Alt = 0;
+    
+            if (team1_score_number > team2_score_number) {
+                pointsTeam1 = 3;
+                pointsTeam1Alt = 5;
+                pointsTeam2Alt = 1;
+            } else if (team1_score_number < team2_score_number) {
+                pointsTeam2 = 3;
+                pointsTeam2Alt = 5;
+                pointsTeam1Alt = 1;
+            } else {
+                pointsTeam1 = 1;
+                pointsTeam2 = 1;
+                pointsTeam1Alt = 3;
+                pointsTeam2Alt = 3;
+            }
+
+            let pointsTeam1_new = 0;
+            let pointsTeam1Alt_new = 0;
+            let pointsTeam2_new = 0;
+            let pointsTeam2Alt_new = 0;
+    
+            if (team1_score_new_number > team2_score_new_number) {
+                pointsTeam1_new = 3;
+                pointsTeam1Alt_new = 5;
+                pointsTeam2Alt_new = 1;
+            } else if (team1_score_new_number < team2_score_new_number) {
+                pointsTeam2_new = 3;
+                pointsTeam2Alt_new = 5;
+                pointsTeam1Alt_new = 1;
+            } else {
+                pointsTeam1_new = 1;
+                pointsTeam2_new = 1;
+                pointsTeam1Alt_new = 3;
+                pointsTeam2Alt_new = 3;
+            }
+        
+            // Update leaderboard for Team 1
+            await trx`
+              UPDATE scoreboard
+              SET score = score - ${pointsTeam1} + ${pointsTeam1_new}, score_alt = score_alt - ${pointsTeam1Alt} + ${pointsTeam1Alt_new}, total_goals = total_goals - ${team1_score_number} + ${team1_score_new_number}
+              WHERE team_name = ${team1_name}
+            `;
+        
+            // Update leaderboard for Team 2
+            await trx`
+              UPDATE scoreboard
+              SET score = score - ${pointsTeam2} + ${pointsTeam2_new}, score_alt = score_alt - ${pointsTeam2Alt} + ${pointsTeam2Alt_new}, total_goals = total_goals - ${team2_score_number} + ${team2_score_new_number}
+              WHERE team_name = ${team2_name}
+            `;
+
+            await trx`
+            UPDATE matches
+            SET team1_score = ${team1_score_new_number}, team2_score = ${team2_score_new_number} 
+            WHERE team1_name = ${team1_name} AND team2_name = ${team2_name}
+            `;
+          });
+    
+
+      revalidatePath("/");
+      return { message: `Successfully edited match!` };
     } catch (e) {
       revalidatePath("/");
       return { message: "Oops" };
