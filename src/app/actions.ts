@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import postgres from "postgres";
 import { z } from "zod";
 
-const sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
+const sql = postgres("postgres://postgres:Cbvf4dEkSNuiG0b@zephyr-dev-db.fly.dev:5432/lohvicto", {
   ssl: "allow",
 });
 

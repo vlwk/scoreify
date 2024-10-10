@@ -8,7 +8,11 @@ import { Control } from './control';
 import Logs from './logs';
 import { format } from "date-fns";
 
-const sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
+// const sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
+//   ssl: "allow",
+// });
+
+const sql = postgres("postgres://postgres:Cbvf4dEkSNuiG0b@zephyr-dev-db.fly.dev:5432/lohvicto", {
   ssl: "allow",
 });
 
