@@ -1,22 +1,22 @@
 import { AddForm } from '@/app/add-form';
 import { MatchForm } from '@/app/match-form'; 
-import postgres from "postgres";
+
 import RegisteredTeams from './RegisteredTeams';
 import MatchesList from './MatchesList';
 import ScoreBoard from './ScoreBoard';
 import { Control } from './control';
 import Logs from './logs';
 import { format } from "date-fns";
-
-// const sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
-//   ssl: "allow",
-// });
-
-const sql = postgres("postgres://postgres:Cbvf4dEkSNuiG0b@zephyr-dev-db.fly.dev:5432/lohvicto", {
-  ssl: "allow",
-});
+import { validateRequest } from "@/lib/auth";
+import { sql } from '@/lib/db';
+import { SignUp } from './signup';
+import { LogIn } from './login';
+import { CurrentUser } from './CurrentUser';
 
 export default async function Home() {
+
+  const { user } = await validateRequest();
+
   const teams = await sql`SELECT team_name, group_number, registered_date FROM scoreboard`;
   const mappedTeams = teams.map((row) => ({
     team_name: row.team_name, 
@@ -60,13 +60,24 @@ export default async function Home() {
       </header>
 
       <main className="flex flex-col gap-8 row-start-2 w-full sm:max-w-2xl">
-        <AddForm />
-        <RegisteredTeams teams={mappedTeams} />
-        <MatchForm />
-        <MatchesList matches={mappedMatches} />
-        <ScoreBoard scoreboard={mappedScoreboard} />
-        <Logs logs={formattedLogs}/>
-        <Control />
+        {!user ? (<>
+          <SignUp />
+          <LogIn />
+          </>) : (
+          <>
+          
+
+            <CurrentUser username={user.username}/>
+            
+            <AddForm />
+            <RegisteredTeams teams={mappedTeams} />
+            <MatchForm />
+            <MatchesList matches={mappedMatches} />
+            <ScoreBoard scoreboard={mappedScoreboard} />
+            <Logs logs={formattedLogs} />
+            {user?.username === "administrator" && <Control />}
+          </>
+        )}
       </main>
 
       <footer className="row-start-3 text-center text-gray-500 text-sm">

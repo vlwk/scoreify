@@ -3,10 +3,189 @@
 import { revalidatePath } from "next/cache";
 import postgres from "postgres";
 import { z } from "zod";
+import { hash, verify } from "@node-rs/argon2";
+import { cookies } from "next/headers";
+import { generateIdFromEntropySize } from "lucia";
+import { lucia, validateRequest } from "@/lib/auth";
 
 const sql = postgres("postgres://postgres:Cbvf4dEkSNuiG0b@zephyr-dev-db.fly.dev:5432/lohvicto", {
   ssl: "allow",
 });
+
+export async function signup(
+    prevState: {
+      message: string;
+    },
+    formData: FormData,
+  ) {
+    const schema = z.object({
+      username: z.string().min(1),
+      password: z.string().min(1),
+    });
+  
+    const parse = schema.safeParse({
+      username: formData.get("username"),
+      password: formData.get("password"),
+    });
+  
+    if (!parse.success) {
+      return { message: "Failed to add teams" };
+    }
+
+    const username = parse.data.username;
+    const password = parse.data.password;
+
+    try {
+
+        if (
+            typeof username !== "string" ||
+            username.length < 3 ||
+            username.length > 31 ||
+            !/^[a-z0-9_-]+$/.test(username)
+        ) {
+            throw new Error(`Invalid username`);
+        }
+
+        if (typeof password !== "string" || password.length < 6 || password.length > 255) {
+            throw new Error(`Invalid password`);
+        }
+
+        const passwordHash = await hash(password, {
+            memoryCost: 19456,
+            timeCost: 2,
+            outputLen: 32,
+            parallelism: 1
+        });
+        const userId = generateIdFromEntropySize(10);
+
+        await sql.begin(async (trx) => {
+
+            const existingUser = await trx`
+            SELECT username FROM auth_user WHERE username = ${username}
+          `;
+          if (existingUser.length > 0) {
+            throw new Error(`User ${username} already exists. Please choose another username.`);
+          }
+            await trx`
+            INSERT INTO auth_user (id, username, password_hash)
+            VALUES (${userId}, ${username}, ${passwordHash})
+            `;
+
+            
+
+          });
+
+          const session = await lucia.createSession(userId, {});
+		const sessionCookie = lucia.createSessionCookie(session.id);
+		cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+          
+        
+        return { message: `Created user successfully with username ${username} and password ${passwordHash}` };
+    } catch (e) {
+        const error = e as Error;
+        return { message: `Error: ${error.message}` };
+    }
+}
+
+
+export async function login(
+    prevState: {
+      message: string;
+    },
+    formData: FormData,
+  ) {
+    const schema = z.object({
+      username: z.string().min(1),
+      password: z.string().min(1),
+    });
+  
+    const parse = schema.safeParse({
+      username: formData.get("username"),
+      password: formData.get("password"),
+    });
+  
+    if (!parse.success) {
+      return { message: "Failed to add teams" };
+    }
+
+    const username = parse.data.username;
+    const password = parse.data.password;
+
+    try {
+
+        if (
+            typeof username !== "string" ||
+            username.length < 3 ||
+            username.length > 31 ||
+            !/^[a-z0-9_-]+$/.test(username)
+        ) {
+            throw new Error(`Invalid username`);
+        }
+
+        if (typeof password !== "string" || password.length < 6 || password.length > 255) {
+            throw new Error(`Invalid password`);
+        }
+
+        const passwordHash = await hash(password);
+        console.log(passwordHash);
+
+        let userId = "";
+
+        await sql.begin(async (trx) => {
+
+            const checkUserPass = await trx`
+            SELECT id, username, password_hash FROM auth_user WHERE username = ${username}
+          `;
+          if (checkUserPass.length == 0) {
+            throw new Error(`Invalid credentials.`);
+          }
+
+          userId = checkUserPass[0].id;
+
+          const validPassword = await verify(checkUserPass[0].password_hash, password, {
+            memoryCost: 19456,
+            timeCost: 2,
+            outputLen: 32,
+            parallelism: 1
+        });
+
+        if (!validPassword) {
+            throw new Error(`Invalid credentials.`);
+          }
+
+          });
+
+          const session = await lucia.createSession(userId, {});
+		const sessionCookie = lucia.createSessionCookie(session.id);
+		cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+        
+        return { message: `Signed in successfully with username ${username} and password_hash ${passwordHash}` };
+    } catch (e) {
+        const error = e as Error;
+        return { message: `Error: ${error.message}` };
+    }
+}
+
+export async function signOut() {
+    try {
+
+        const { session } = await validateRequest();
+
+        if (!session) {
+            throw new Error("Unauthorised");
+        }
+
+        await lucia.invalidateSession(session.id);
+
+	    const sessionCookie = lucia.createBlankSessionCookie();
+	    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+        
+        return { message: `Signed out successfully` };
+    } catch (e) {
+        const error = e as Error;
+        return { message: `Error: ${error.message}` };
+    }
+}
 
 export async function clearAllData() {
     
@@ -27,6 +206,9 @@ export async function clearAllData() {
         await trx`
         TRUNCATE TABLE logs
         `;
+
+        await trx`DELETE FROM auth_user
+        WHERE NOT (username = 'administrator')`;
       });
       // Revalidate and return success message
 
