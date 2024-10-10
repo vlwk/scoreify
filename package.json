@@ -11,8 +11,10 @@
   "dependencies": {
     "date-fns": "^4.1.0",
     "next": "14.2.14",
+    "postgres": "^3.4.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
