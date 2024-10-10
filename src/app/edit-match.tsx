@@ -61,7 +61,7 @@ export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_
           <input type="hidden" name="team1_score" value={team1_score} />
           <input type="hidden" name="team2_score" value={team2_score} />
           <div className="mb-4">
-            <label htmlFor="team1_score" className="block text-sm font-medium text-gray-700">Team 1 Score</label>
+            <label htmlFor="team1_score" className="block text-sm font-medium text-gray-700">{`${team1_name} Score`}</label>
             <input
               type="number"
               id="team1_score_new"
@@ -72,7 +72,7 @@ export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="team2_score" className="block text-sm font-medium text-gray-700">Team 2 Score</label>
+            <label htmlFor="team2_score" className="block text-sm font-medium text-gray-700">{`${team2_name} Score`}</label>
             <input
               type="number"
               id="team2_score_new"
