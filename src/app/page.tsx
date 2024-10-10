@@ -1,17 +1,17 @@
 import { AddForm } from "@/app/AddForm";
 import { MatchForm } from "@/app/MatchForm";
 
-import RegisteredTeams from "./RegisteredTeams";
+import RegisteredTeams from "./RegisteredTeamsList";
 import MatchesList from "./MatchesList";
 import ScoreBoard from "./ScoreBoard";
-import { Control } from "./Control";
-import Logs from "./logs";
+import { Control } from "./ControlForm";
+import Logs from "./LogsList";
 import { format } from "date-fns";
 import { validateRequest } from "@/lib/auth";
 import { sql } from "@/lib/db";
-import { SignUp } from "./SignUp";
-import { LogIn } from "./Login";
-import { CurrentUser } from "./CurrentUser";
+import { SignUp } from "./SignUpForm";
+import { LogIn } from "./LoginForm";
+import { CurrentUser } from "./SignOutForm";
 
 export default async function Home() {
   const { user } = await validateRequest();

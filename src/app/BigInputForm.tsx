@@ -24,7 +24,7 @@ function SubmitButton() {
 interface FormProps {
   action: (
     prevState: { message: string },
-    formData: FormData
+    formData: FormData,
   ) => Promise<{ message: string }>;
   id: string;
   label: string;
