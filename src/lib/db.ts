@@ -1,6 +1,12 @@
 import postgres from "postgres";
 
-export const sql = postgres("postgres://postgres:Cbvf4dEkSNuiG0b@zephyr-dev-db.fly.dev:5432/lohvicto", {
+const connectionString = process.env.POSTGRES_SQL;
+
+if (!connectionString) {
+  throw new Error("Missing PostgreSQL connection string in environment variables.");
+}
+
+export const sql = postgres(connectionString, {
   ssl: "allow",
 });
 

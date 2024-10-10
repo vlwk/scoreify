@@ -1,16 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import postgres from "postgres";
 import { z } from "zod";
 import { hash, verify } from "@node-rs/argon2";
 import { cookies } from "next/headers";
 import { generateIdFromEntropySize } from "lucia";
 import { lucia, validateRequest } from "@/lib/auth";
-
-const sql = postgres("postgres://postgres:Cbvf4dEkSNuiG0b@zephyr-dev-db.fly.dev:5432/lohvicto", {
-  ssl: "allow",
-});
+import { sql } from '@/lib/db';
 
 export async function signup(
     prevState: {
