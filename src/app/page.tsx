@@ -5,7 +5,7 @@ import RegisteredTeams from "./RegisteredTeams";
 import MatchesList from "./MatchesList";
 import ScoreBoard from "./ScoreBoard";
 import { Control } from "./Control";
-import Logs from "./Logs";
+import Logs from "./logs";
 import { format } from "date-fns";
 import { validateRequest } from "@/lib/auth";
 import { sql } from "@/lib/db";

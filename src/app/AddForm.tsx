@@ -1,6 +1,6 @@
 "use client";
 
-import { Form } from "./Form";
+import { Form } from "./BigInputForm";
 import { addTeams } from "@/app/actions";
 
 export function AddForm() {
