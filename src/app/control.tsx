@@ -23,16 +23,12 @@ function ClearAllButton() {
 }
 
 export function Control({  }) {
-  const [state, formAction] = useFormState(clearAllData, initialState);
+  const [, formAction] = useFormState(clearAllData, initialState);
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6">
         <form action={formAction}>
             <h2 className="text-2xl font-semibold mb-4 text-gray-700">Control</h2>
-        {/* <input type="hidden" name="team1_name" value={team1_name} />
-        <input type="hidden" name="team2_name" value={team2_name} />
-        <input type="hidden" name="team1_score" value={team1_score} />
-        <input type="hidden" name="team2_score" value={team2_score} /> */}
         <div className="mt-4">
           <ClearAllButton />
         </div>

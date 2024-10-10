@@ -4,7 +4,18 @@ import { useState } from "react";
 import { DeleteMatch } from "./delete-match";
 import { EditMatch } from "./edit-match";
 
-export default function MatchesList({ matches }) {
+interface MatchEntry {
+  team1_name: string;
+  team2_name: string;
+  team1_score: number;
+  team2_score: number;
+}
+
+interface MatchEntryProps {
+  matches: MatchEntry[];
+}
+
+export default function MatchesList({ matches } : MatchEntryProps) {
   const [selectedTeam, setSelectedTeam] = useState("all"); // State for the selected team
 
   // Get unique team names for the dropdown

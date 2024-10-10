@@ -4,16 +4,11 @@ import { revalidatePath } from "next/cache";
 import postgres from "postgres";
 import { z } from "zod";
 
-let sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
+const sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
   ssl: "allow",
 });
 
-export async function clearAllData(
-    prevState: {
-      message: string;
-    },
-    formData: FormData,
-  ) {
+export async function clearAllData() {
     
   
     try {
@@ -38,8 +33,9 @@ export async function clearAllData(
       revalidatePath("/");
       return { message: "Successfully cleared all data!" };
     } catch (e) {
+      const error = e as Error;
       revalidatePath("/");
-      return { message: `Error: ${e.message}` };
+      return { message: `Error: ${error.message}` };
     }
   }
 
@@ -113,12 +109,13 @@ export async function addTeams(
       revalidatePath("/");
       return { message: "All teams added successfully!" };
     } catch (e) {
+        const error = e as Error;
         await sql`
       INSERT INTO logs (timestamp, type, contents, message)
-      VALUES (NOW(), 'addTeams', ${data.teams_info}, ${`Error: ${e.message}`})
+      VALUES (NOW(), 'addTeams', ${data.teams_info}, ${`Error: ${error.message}`})
         `;
       revalidatePath("/");
-      return { message: `Error: ${e.message}` };
+      return { message: `Error: ${error.message}` };
     }
   }
   
@@ -151,7 +148,7 @@ export async function addTeams(
       await sql.begin(async (trx) => {
         // Loop through each line and process the matches
         for (const line of matchLines) {
-          var [team1_name, team2_name, team1_score, team2_score] = line.trim().split(" ");
+          let [team1_name, team2_name, team1_score, team2_score] = line.trim().split(" ");
           
           if (!team1_name || !team2_name || !team1_score || !team2_score) {
             throw new Error("Invalid match format. Please ensure all fields are present.");
@@ -252,12 +249,13 @@ export async function addTeams(
       return { message: `Added matches successfully.` };
   
     } catch (e) {
+        const error = e as Error;
         await sql`
       INSERT INTO logs (timestamp, type, contents, message)
-      VALUES (NOW(), 'addMatches', ${data.matches_info}, ${`Error: ${e.message}`})
+      VALUES (NOW(), 'addMatches', ${data.matches_info}, ${`Error: ${error.message}`})
         `;
       revalidatePath("/");
-      return { message: e.message || "Failed to add matches" };
+      return { message: error.message || "Failed to add matches" };
     }
   }
   
@@ -337,12 +335,13 @@ export async function addTeams(
       revalidatePath("/");
       return { message: `Deleted match successfully.` };
     } catch (e) {
+        const error = e as Error;
         await sql`
         INSERT INTO logs (timestamp, type, contents, message)
-        VALUES (NOW(), 'deleteMatches', ${`Match between ${team1_name} and ${team2_name}`}, ${`Error: ${e.message}`})
+        VALUES (NOW(), 'deleteMatches', ${`Match between ${team1_name} and ${team2_name}`}, ${`Error: ${error.message}`})
         `;
       revalidatePath("/");
-      return { message: e.message || "Failed to delete match." };
+      return { message: error.message || "Failed to delete match." };
     }
   }
 
@@ -449,11 +448,12 @@ export async function addTeams(
       revalidatePath("/");
       return { message: `Successfully edited match!` };
     } catch (e) {
+        const error = e as Error;
         await sql`
           INSERT INTO logs (timestamp, type, contents, message)
-          VALUES (NOW(), 'editMatch', ${`Match between ${team1_name} and ${team2_name} from ${team1_score_number}-${team2_score_number} to ${team1_score_new_number}-${team2_score_new_number}`}, ${`Error: ${e.message}`})
+          VALUES (NOW(), 'editMatch', ${`Match between ${team1_name} and ${team2_name} from ${team1_score_number}-${team2_score_number} to ${team1_score_new_number}-${team2_score_new_number}`}, ${`Error: ${error.message}`})
           `;
       revalidatePath("/");
-      return { message: e.message || "Failed to edit match." };
+      return { message: error.message || "Failed to edit match." };
     }
   }

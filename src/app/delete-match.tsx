@@ -24,7 +24,7 @@ function DeleteButton() {
 
 
 
-export function DeleteMatch({ team1_name, team2_name, team1_score, team2_score }: { team1_name: string; team2_name: string; team1_score: string; team2_score: string }) {
+export function DeleteMatch({ team1_name, team2_name, team1_score, team2_score }: { team1_name: string; team2_name: string; team1_score: number; team2_score: number }) {
   const [state, formAction] = useFormState(deleteMatch, initialState);
 
   return (

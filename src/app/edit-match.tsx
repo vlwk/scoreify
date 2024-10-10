@@ -8,7 +8,11 @@ const initialState = {
   message: "",
 };
 
-function EditMatchButton({ onClick }) {
+type EditMatchButtonProps = {
+    onClick: () => void;
+};
+
+function EditMatchButton({ onClick } : EditMatchButtonProps) {
   return (
     <button 
       onClick={onClick} 
@@ -33,7 +37,16 @@ function SubmitButton() {
     );
   }
 
-export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_score, team2_score }) {
+  type EditMatchModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
+    team1_name: string;
+    team2_name: string;
+    team1_score: number;
+    team2_score: number;
+  };
+
+export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_score, team2_score } : EditMatchModalProps) {
   const [state, formAction] = useFormState(editMatch, initialState);
 
   if (!isOpen) return null; // If the modal is not open, return null
@@ -88,8 +101,15 @@ export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_
   );
 }
 
+type EditMatchProps = {
+    team1_name: string;
+    team2_name: string;
+    team1_score: number;
+    team2_score: number;
+};
+
 // EditMatch component
-export function EditMatch({ team1_name, team2_name, team1_score, team2_score }) {
+export function EditMatch({ team1_name, team2_name, team1_score, team2_score } : EditMatchProps) {
   const [isEditing, setEditing] = useState(false);
 
   return (

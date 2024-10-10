@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
+interface ScoreboardEntry {
+    team_name: string;
+    group_number: number;
+    registered_date: string;
+    score: number;
+    score_alt: number;
+    total_goals: number;
+  }
+  
+  interface ScoreboardEntryProps {
+    scoreboard: ScoreboardEntry[];
+  }
 
-export default function ScoreBoard({ scoreboard }) {
-  const sortScoreboard = (data) => {
+export default function ScoreBoard({ scoreboard } : ScoreboardEntryProps) {
+  const sortScoreboard = (data : ScoreboardEntry[]) => {
     return data.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
       if (b.total_goals !== a.total_goals) return b.total_goals - a.total_goals;
       if (b.score_alt !== a.score_alt) return b.score_alt - a.score_alt;
       const dateA = new Date(`${a.registered_date.slice(2, 4)}-${a.registered_date.slice(0, 2)}-01`);
       const dateB = new Date(`${b.registered_date.slice(2, 4)}-${b.registered_date.slice(0, 2)}-01`);
-      return dateA - dateB; // Sorts in ascending order
+      return dateA.getTime() - dateB.getTime(); 
     });
   };
 

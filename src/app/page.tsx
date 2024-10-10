@@ -6,16 +6,47 @@ import MatchesList from './MatchesList';
 import ScoreBoard from './ScoreBoard';
 import { Control } from './control';
 import Logs from './logs';
+import { format } from "date-fns";
 
-let sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
+const sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
   ssl: "allow",
 });
 
 export default async function Home() {
-  let teams = await sql`SELECT team_name, group_number, registered_date FROM scoreboard`;
-  let matches = await sql`SELECT * FROM matches`;
-  let scoreboard = await sql`SELECT * FROM scoreboard ORDER BY group_number, score DESC`;
-  let logs = await sql`SELECT * FROM logs`;
+  const teams = await sql`SELECT team_name, group_number, registered_date FROM scoreboard`;
+  const mappedTeams = teams.map((row) => ({
+    team_name: row.team_name, 
+    group_number: row.group_number,
+    registered_date: row.registered_date,
+  }));
+
+  const matches = await sql`SELECT * FROM matches`;
+  const mappedMatches = matches.map((row) => ({
+    team1_name: row.team1_name,
+    team2_name: row.team2_name,
+    team1_score: row.team1_score,
+    team2_score: row.team2_score,
+  }));
+  const scoreboard = await sql`SELECT * FROM scoreboard ORDER BY group_number, score DESC`;
+  const mappedScoreboard = scoreboard.map((row) => ({
+    team_name: row.team_name,
+    group_number: row.group_number,
+    registered_date: row.registered_date,
+    score: row.score,
+    score_alt: row.score_alt,
+    total_goals: row.total_goals,
+  }));
+  const logs = await sql`SELECT * FROM logs`;
+  const mappedLogs = logs.map((row) => ({
+    type: row.type,
+    contents: row.contents,
+    message: row.message,
+    timestamp: row.timestamp,
+  }));
+  const formattedLogs = mappedLogs.map(log => ({
+    ...log,
+    timestamp: format(new Date(log.timestamp), 'yyyy-MM-dd HH:mm:ss')
+  }));
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-12 sm:p-16 bg-bbt font-sans">
@@ -26,11 +57,11 @@ export default async function Home() {
 
       <main className="flex flex-col gap-8 row-start-2 w-full sm:max-w-2xl">
         <AddForm />
-        <RegisteredTeams teams={teams} />
+        <RegisteredTeams teams={mappedTeams} />
         <MatchForm />
-        <MatchesList matches={matches} />
-        <ScoreBoard scoreboard={scoreboard} />
-        <Logs logs={logs}/>
+        <MatchesList matches={mappedMatches} />
+        <ScoreBoard scoreboard={mappedScoreboard} />
+        <Logs logs={formattedLogs}/>
         <Control />
       </main>
 

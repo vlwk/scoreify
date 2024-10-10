@@ -18,7 +18,17 @@ function SubmitButton() {
   );
 }
 
-export function Form({ action, id, label, hint }) {
+interface FormProps {
+    action: (
+        prevState: { message: string },
+        formData: FormData
+      ) => Promise<{ message: string }>; 
+    id: string;
+    label: string;
+    hint: string;
+  }
+
+export function Form({ action, id, label, hint } : FormProps) {
   const [state, formAction] = useFormState(action, initialState);
 
   return (

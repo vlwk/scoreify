@@ -3,7 +3,17 @@
 
 import { useState } from "react";
 
-export default function RegisteredTeams({ teams }) {
+interface TeamsEntry {
+  team_name: string;
+  registered_date: string;
+  group_number: number;
+}
+
+interface TeamsEntryProps {
+  teams: TeamsEntry[];
+}
+
+export default function RegisteredTeams({ teams } : TeamsEntryProps) {
   const [filterGroup1, setFilterGroup1] = useState(true);
   const [filterGroup2, setFilterGroup2] = useState(true);
 

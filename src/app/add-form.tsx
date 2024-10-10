@@ -3,10 +3,6 @@
 import { Form } from "./form";
 import { addTeams } from "@/app/actions";
 
-const initialState = {
-  message: "",
-};
-
 export function AddForm() {
 
     return (

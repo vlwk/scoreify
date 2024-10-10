@@ -1,6 +1,17 @@
 "use client";
 
-export default function Logs({ logs }) {
+interface LogEntry {
+    type: string;
+    contents: string;
+    message: string;
+    timestamp: string; 
+}
+
+interface LogsProps {
+    logs: LogEntry[];
+  }
+
+export default function Logs({ logs } : LogsProps) {
   return (
     <div className="bg-white shadow-lg rounded-lg p-6">
       <h2 className="text-2xl font-semibold mb-4 text-gray-700">Logs</h2>
@@ -22,7 +33,7 @@ export default function Logs({ logs }) {
                 <td className="px-4 py-2 text-gray-600">{log.contents}</td>
                 <td className="px-4 py-2 text-gray-600">{log.message}</td>
                 <td className="px-4 py-2 text-gray-600">
-                  {new Date(log.timestamp).toLocaleString()}
+                  {log.timestamp}
                 </td>
               </tr>
             ))}

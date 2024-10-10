@@ -3,10 +3,6 @@
 import { Form } from "./form";
 import { addMatches } from "@/app/actions";
 
-const initialState = {
-  message: "",
-};
-
 export function MatchForm() {
 
     return (
