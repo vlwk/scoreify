@@ -55,8 +55,8 @@ export default async function Home() {
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-12 sm:p-16 bg-bbt font-sans">
       <header className="row-start-1 text-center">
-        <h1 className="text-4xl font-semibold text-gray-800">Team Registration</h1>
-        <p className="text-gray-600 mt-2">View and manage your registered teams below.</p>
+        <h1 className="text-4xl font-semibold text-gray-800">Bubble Team</h1>
+        <p className="text-gray-600 mt-2">View and manage your teams!</p>
       </header>
 
       <main className="flex flex-col gap-8 row-start-2 w-full sm:max-w-2xl">
