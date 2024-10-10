@@ -1,7 +1,5 @@
 import postgres from "postgres";
 
-require('dotenv').config();
-
 const connectionString = process.env.POSTGRES_SQL;
 
 if (!connectionString) {
