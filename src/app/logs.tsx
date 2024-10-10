@@ -1,17 +1,17 @@
 "use client";
 
 interface LogEntry {
-    type: string;
-    contents: string;
-    message: string;
-    timestamp: string; 
+  type: string;
+  contents: string;
+  message: string;
+  timestamp: string;
 }
 
 interface LogsProps {
-    logs: LogEntry[];
-  }
+  logs: LogEntry[];
+}
 
-export default function Logs({ logs } : LogsProps) {
+export default function Logs({ logs }: LogsProps) {
   return (
     <div className="bg-white shadow-lg rounded-lg p-6">
       <h2 className="text-2xl font-semibold mb-4 text-gray-700">Logs</h2>
@@ -20,21 +20,30 @@ export default function Logs({ logs } : LogsProps) {
         <table className="min-w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-100">
-              <th className="px-4 py-2 text-left text-gray-600 font-medium">Type</th>
-              <th className="px-4 py-2 text-left text-gray-600 font-medium">Contents</th>
-              <th className="px-4 py-2 text-left text-gray-600 font-medium">Message</th>
-              <th className="px-4 py-2 text-left text-gray-600 font-medium">Timestamp</th>
+              <th className="px-4 py-2 text-left text-gray-600 font-medium">
+                Type
+              </th>
+              <th className="px-4 py-2 text-left text-gray-600 font-medium">
+                Contents
+              </th>
+              <th className="px-4 py-2 text-left text-gray-600 font-medium">
+                Message
+              </th>
+              <th className="px-4 py-2 text-left text-gray-600 font-medium">
+                Timestamp
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {logs.map((log, index) => (
-              <tr key={index} className="hover:bg-gray-100 transition duration-300">
+              <tr
+                key={index}
+                className="hover:bg-gray-100 transition duration-300"
+              >
                 <td className="px-4 py-2 text-gray-800">{log.type}</td>
                 <td className="px-4 py-2 text-gray-600">{log.contents}</td>
                 <td className="px-4 py-2 text-gray-600">{log.message}</td>
-                <td className="px-4 py-2 text-gray-600">
-                  {log.timestamp}
-                </td>
+                <td className="px-4 py-2 text-gray-600">{log.timestamp}</td>
               </tr>
             ))}
           </tbody>

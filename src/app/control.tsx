@@ -22,17 +22,17 @@ function ClearAllButton() {
   );
 }
 
-export function Control({  }) {
+export function Control({}) {
   const [, formAction] = useFormState(clearAllData, initialState);
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6">
-        <form action={formAction}>
-            <h2 className="text-2xl font-semibold mb-4 text-gray-700">Control</h2>
+      <form action={formAction}>
+        <h2 className="text-2xl font-semibold mb-4 text-gray-700">Control</h2>
         <div className="mt-4">
           <ClearAllButton />
         </div>
-        </form>
+      </form>
     </div>
   );
 }

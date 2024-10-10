@@ -1,25 +1,25 @@
-import { AddForm } from '@/app/add-form';
-import { MatchForm } from '@/app/match-form'; 
+import { AddForm } from "@/app/AddForm";
+import { MatchForm } from "@/app/MatchForm";
 
-import RegisteredTeams from './RegisteredTeams';
-import MatchesList from './MatchesList';
-import ScoreBoard from './ScoreBoard';
-import { Control } from './control';
-import Logs from './logs';
+import RegisteredTeams from "./RegisteredTeams";
+import MatchesList from "./MatchesList";
+import ScoreBoard from "./ScoreBoard";
+import { Control } from "./Control";
+import Logs from "./Logs";
 import { format } from "date-fns";
 import { validateRequest } from "@/lib/auth";
-import { sql } from '@/lib/db';
-import { SignUp } from './signup';
-import { LogIn } from './login';
-import { CurrentUser } from './CurrentUser';
+import { sql } from "@/lib/db";
+import { SignUp } from "./SignUp";
+import { LogIn } from "./Login";
+import { CurrentUser } from "./CurrentUser";
 
 export default async function Home() {
-
   const { user } = await validateRequest();
 
-  const teams = await sql`SELECT team_name, group_number, registered_date FROM scoreboard`;
+  const teams =
+    await sql`SELECT team_name, group_number, registered_date FROM scoreboard`;
   const mappedTeams = teams.map((row) => ({
-    team_name: row.team_name, 
+    team_name: row.team_name,
     group_number: row.group_number,
     registered_date: row.registered_date,
   }));
@@ -31,7 +31,8 @@ export default async function Home() {
     team1_score: row.team1_score,
     team2_score: row.team2_score,
   }));
-  const scoreboard = await sql`SELECT * FROM scoreboard ORDER BY group_number, score DESC`;
+  const scoreboard =
+    await sql`SELECT * FROM scoreboard ORDER BY group_number, score DESC`;
   const mappedScoreboard = scoreboard.map((row) => ({
     team_name: row.team_name,
     group_number: row.group_number,
@@ -47,9 +48,9 @@ export default async function Home() {
     message: row.message,
     timestamp: row.timestamp,
   }));
-  const formattedLogs = mappedLogs.map(log => ({
+  const formattedLogs = mappedLogs.map((log) => ({
     ...log,
-    timestamp: format(new Date(log.timestamp), 'yyyy-MM-dd HH:mm:ss')
+    timestamp: format(new Date(log.timestamp), "yyyy-MM-dd HH:mm:ss"),
   }));
 
   return (
@@ -60,15 +61,15 @@ export default async function Home() {
       </header>
 
       <main className="flex flex-col gap-8 row-start-2 w-full sm:max-w-2xl">
-        {!user ? (<>
-          <SignUp />
-          <LogIn />
-          </>) : (
+        {!user ? (
           <>
-          
+            <SignUp />
+            <LogIn />
+          </>
+        ) : (
+          <>
+            <CurrentUser username={user.username} />
 
-            <CurrentUser username={user.username}/>
-            
             <AddForm />
             <RegisteredTeams teams={mappedTeams} />
             <MatchForm />

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { DeleteMatch } from "./delete-match";
-import { EditMatch } from "./edit-match";
+import { DeleteMatch } from "./DeleteMatch";
+import { EditMatch } from "./EditMatch";
 
 interface MatchEntry {
   team1_name: string;
@@ -15,26 +15,38 @@ interface MatchEntryProps {
   matches: MatchEntry[];
 }
 
-export default function MatchesList({ matches } : MatchEntryProps) {
+export default function MatchesList({ matches }: MatchEntryProps) {
   const [selectedTeam, setSelectedTeam] = useState("all"); // State for the selected team
 
   // Get unique team names for the dropdown
-  const teams = Array.from(new Set(matches.flatMap(match => [match.team1_name, match.team2_name])));
+  const teams = Array.from(
+    new Set(matches.flatMap((match) => [match.team1_name, match.team2_name])),
+  );
 
   // Filter matches based on the selected team
-  const filteredMatches = selectedTeam === "all"
-    ? matches
-    : matches.filter(
-        match => match.team1_name === selectedTeam || match.team2_name === selectedTeam
-      );
+  const filteredMatches =
+    selectedTeam === "all"
+      ? matches
+      : matches.filter(
+          (match) =>
+            match.team1_name === selectedTeam ||
+            match.team2_name === selectedTeam,
+        );
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-700">Match Scores</h2>
-      
+      <h2 className="text-2xl font-semibold mb-4 text-gray-700">
+        Match Scores
+      </h2>
+
       {/* Dropdown to select team */}
       <div className="mb-4">
-        <label htmlFor="team-select" className="block text-sm font-medium text-gray-700">Select Team:</label>
+        <label
+          htmlFor="team-select"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Select Team:
+        </label>
         <select
           id="team-select"
           value={selectedTeam}

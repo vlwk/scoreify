@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       backgroundImage: {
-        'bbt': "url('https://i.pinimg.com/736x/b1/85/d3/b185d338f20f816ea84396afc75e4236.jpg')",
+        bbt: "url('https://i.pinimg.com/736x/b1/85/d3/b185d338f20f816ea84396afc75e4236.jpg')",
       },
       colors: {
         background: "var(--background)",

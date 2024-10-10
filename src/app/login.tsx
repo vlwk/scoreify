@@ -4,7 +4,6 @@ import { useFormState } from "react-dom";
 import { useFormStatus } from "react-dom";
 import { login } from "./actions";
 
-
 const initialState = {
   message: "",
 };
@@ -23,10 +22,8 @@ function LogInButton() {
   );
 }
 
-
 export function LogIn() {
   const [state, formAction] = useFormState(login, initialState);
-  
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6">

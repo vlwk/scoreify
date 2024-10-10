@@ -4,7 +4,6 @@ import { useFormState } from "react-dom";
 import { useFormStatus } from "react-dom";
 import { signup } from "./actions";
 
-
 const initialState = {
   message: "",
 };
@@ -23,10 +22,8 @@ function SignUpButton() {
   );
 }
 
-
 export function SignUp() {
   const [state, formAction] = useFormState(signup, initialState);
-  
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6">

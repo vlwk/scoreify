@@ -9,13 +9,13 @@ const initialState = {
 };
 
 type EditMatchButtonProps = {
-    onClick: () => void;
+  onClick: () => void;
 };
 
-function EditMatchButton({ onClick } : EditMatchButtonProps) {
+function EditMatchButton({ onClick }: EditMatchButtonProps) {
   return (
-    <button 
-      onClick={onClick} 
+    <button
+      onClick={onClick}
       className="bg-blue-500 text-white font-medium py-2 px-4 rounded-full shadow-lg hover:bg-blue-600 transition ease-in-out duration-200"
     >
       Edit
@@ -24,29 +24,36 @@ function EditMatchButton({ onClick } : EditMatchButtonProps) {
 }
 
 function SubmitButton() {
-    const { pending } = useFormStatus();
-  
-    return (
-      <button 
-        type="submit" 
-        className="bg-blue-500 text-white font-medium py-2 px-4 rounded-full hover:bg-blue-600 transition ease-in-out duration-200" 
-        aria-disabled={pending}
-      >
-        {pending ? "Submitting..." : "Submit"}
-      </button>
-    );
-  }
+  const { pending } = useFormStatus();
 
-  type EditMatchModalProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    team1_name: string;
-    team2_name: string;
-    team1_score: number;
-    team2_score: number;
-  };
+  return (
+    <button
+      type="submit"
+      className="bg-blue-500 text-white font-medium py-2 px-4 rounded-full hover:bg-blue-600 transition ease-in-out duration-200"
+      aria-disabled={pending}
+    >
+      {pending ? "Submitting..." : "Submit"}
+    </button>
+  );
+}
 
-export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_score, team2_score } : EditMatchModalProps) {
+type EditMatchModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  team1_name: string;
+  team2_name: string;
+  team1_score: number;
+  team2_score: number;
+};
+
+export function EditMatchModal({
+  isOpen,
+  onClose,
+  team1_name,
+  team2_name,
+  team1_score,
+  team2_score,
+}: EditMatchModalProps) {
   const [state, formAction] = useFormState(editMatch, initialState);
 
   if (!isOpen) return null; // If the modal is not open, return null
@@ -54,14 +61,19 @@ export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-700">Edit Match</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-gray-700">
+          Edit Match
+        </h2>
         <form action={formAction}>
           <input type="hidden" name="team1_name" value={team1_name} />
           <input type="hidden" name="team2_name" value={team2_name} />
           <input type="hidden" name="team1_score" value={team1_score} />
           <input type="hidden" name="team2_score" value={team2_score} />
           <div className="mb-4">
-            <label htmlFor="team1_score" className="block text-sm font-medium text-gray-700">{`${team1_name} Score`}</label>
+            <label
+              htmlFor="team1_score"
+              className="block text-sm font-medium text-gray-700"
+            >{`${team1_name} Score`}</label>
             <input
               type="number"
               id="team1_score_new"
@@ -72,7 +84,10 @@ export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="team2_score" className="block text-sm font-medium text-gray-700">{`${team2_name} Score`}</label>
+            <label
+              htmlFor="team2_score"
+              className="block text-sm font-medium text-gray-700"
+            >{`${team2_name} Score`}</label>
             <input
               type="number"
               id="team2_score_new"
@@ -83,9 +98,9 @@ export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_
             />
           </div>
           <div className="mt-4">
-            <button 
-              type="button" 
-              onClick={onClose} 
+            <button
+              type="button"
+              onClick={onClose}
               className="mr-2 bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-full hover:bg-gray-400 transition ease-in-out duration-200"
             >
               Cancel
@@ -102,26 +117,31 @@ export function EditMatchModal({ isOpen, onClose, team1_name, team2_name, team1_
 }
 
 type EditMatchProps = {
-    team1_name: string;
-    team2_name: string;
-    team1_score: number;
-    team2_score: number;
+  team1_name: string;
+  team2_name: string;
+  team1_score: number;
+  team2_score: number;
 };
 
 // EditMatch component
-export function EditMatch({ team1_name, team2_name, team1_score, team2_score } : EditMatchProps) {
+export function EditMatch({
+  team1_name,
+  team2_name,
+  team1_score,
+  team2_score,
+}: EditMatchProps) {
   const [isEditing, setEditing] = useState(false);
 
   return (
     <div>
       <EditMatchButton onClick={() => setEditing(true)} />
-      <EditMatchModal 
-        isOpen={isEditing} 
-        onClose={() => setEditing(false)} 
-        team1_name={team1_name} 
-        team2_name={team2_name} 
-        team1_score={team1_score} 
-        team2_score={team2_score} 
+      <EditMatchModal
+        isOpen={isEditing}
+        onClose={() => setEditing(false)}
+        team1_name={team1_name}
+        team2_name={team2_name}
+        team1_score={team1_score}
+        team2_score={team2_score}
       />
     </div>
   );

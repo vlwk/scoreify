@@ -22,25 +22,24 @@ function SignOutButton() {
   );
 }
 
-export function CurrentUser({ username } : {username: string}) {
+export function CurrentUser({ username }: { username: string }) {
   const [state, formAction] = useFormState(signOut, initialState);
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6">
-        <form action={formAction}>
-            <h1 className="text-2xl font-semibold mb-4 text-gray-700">Hi, {username}!</h1>
-            <div className="mt-6">
-                <SignOutButton />
-            </div>
+      <form action={formAction}>
+        <h1 className="text-2xl font-semibold mb-4 text-gray-700">
+          Hi, {username}!
+        </h1>
+        <div className="mt-6">
+          <SignOutButton />
+        </div>
 
-            {/* Status Message */}
-            <p className="mt-4 text-gray-500" aria-live="polite" role="status">
-            {state?.message}
-            </p>
-        </form>
-            
+        {/* Status Message */}
+        <p className="mt-4 text-gray-500" aria-live="polite" role="status">
+          {state?.message}
+        </p>
+      </form>
     </div>
   );
 }
-
-

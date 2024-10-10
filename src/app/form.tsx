@@ -7,28 +7,31 @@ const initialState = {
   message: "",
 };
 
-
 function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button type="submit" className="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300" aria-disabled={pending}>
-      {pending ? "Submitting..." : "Submit" }
+    <button
+      type="submit"
+      className="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+      aria-disabled={pending}
+    >
+      {pending ? "Submitting..." : "Submit"}
     </button>
   );
 }
 
 interface FormProps {
-    action: (
-        prevState: { message: string },
-        formData: FormData
-      ) => Promise<{ message: string }>; 
-    id: string;
-    label: string;
-    hint: string;
-  }
+  action: (
+    prevState: { message: string },
+    formData: FormData,
+  ) => Promise<{ message: string }>;
+  id: string;
+  label: string;
+  hint: string;
+}
 
-export function Form({ action, id, label, hint } : FormProps) {
+export function Form({ action, id, label, hint }: FormProps) {
   const [state, formAction] = useFormState(action, initialState);
 
   return (
@@ -38,11 +41,11 @@ export function Form({ action, id, label, hint } : FormProps) {
         <textarea
           id={id}
           name={id}
-          rows={6} 
+          rows={6}
           required
           className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
         />
-        <p className="mt-4 text-sm text-gray-500">{hint}</p> 
+        <p className="mt-4 text-sm text-gray-500">{hint}</p>
         <div className="mt-4">
           <SubmitButton />
         </div>

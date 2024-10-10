@@ -3,7 +3,9 @@ import postgres from "postgres";
 const connectionString = process.env.POSTGRES_SQL;
 
 if (!connectionString) {
-  throw new Error("Missing PostgreSQL connection string in environment variables.");
+  throw new Error(
+    "Missing PostgreSQL connection string in environment variables.",
+  );
 }
 
 export const sql = postgres(connectionString, {
@@ -11,7 +13,7 @@ export const sql = postgres(connectionString, {
 });
 
 export interface DatabaseUser {
-	id: string;
-	username: string;
-	password_hash: string;
+  id: string;
+  username: string;
+  password_hash: string;
 }
