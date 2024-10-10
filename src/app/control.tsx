@@ -36,9 +36,6 @@ export function Control({  }) {
         <div className="mt-4">
           <ClearAllButton />
         </div>
-        <p className="mt-4" aria-live="polite" role="status">
-            {state?.message}
-        </p>
         </form>
     </div>
   );

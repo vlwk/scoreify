@@ -5,6 +5,7 @@ import RegisteredTeams from './RegisteredTeams';
 import MatchesList from './MatchesList';
 import ScoreBoard from './ScoreBoard';
 import { Control } from './control';
+import Logs from './logs';
 
 let sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!, {
   ssl: "allow",
@@ -14,6 +15,7 @@ export default async function Home() {
   let teams = await sql`SELECT team_name, group_number, registered_date FROM scoreboard`;
   let matches = await sql`SELECT * FROM matches`;
   let scoreboard = await sql`SELECT * FROM scoreboard ORDER BY group_number, score DESC`;
+  let logs = await sql`SELECT * FROM logs`;
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-12 sm:p-16 bg-bbt font-sans">
@@ -28,6 +30,7 @@ export default async function Home() {
         <MatchForm />
         <MatchesList matches={matches} />
         <ScoreBoard scoreboard={scoreboard} />
+        <Logs logs={logs}/>
         <Control />
       </main>
 

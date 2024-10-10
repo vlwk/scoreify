@@ -26,6 +26,7 @@ export default function ScoreBoard({ scoreboard }) {
         <table className="min-w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-100">
+            <th className="px-4 py-2 text-left text-gray-600 font-medium">Rank</th>
               <th className="px-4 py-2 text-left text-gray-600 font-medium">Team</th>
               <th className="px-4 py-2 text-left text-gray-600 font-medium">Group Number</th>
               <th className="px-4 py-2 text-left text-gray-600 font-medium">Registered Date</th>
@@ -35,8 +36,9 @@ export default function ScoreBoard({ scoreboard }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {group1Scoreboard.map((row) => (
-              <tr key={row.team_name} className="hover:bg-gray-100 transition duration-300">
+            {group1Scoreboard.map((row, index) => (
+              <tr key={row.team_name} className={`hover:bg-gray-100 transition duration-300 ${index < 4 ? 'bg-yellow-100' : ''}`}>
+                <td className="px-4 py-2 text-gray-800">{index + 1}</td>
                 <td className="px-4 py-2 text-gray-800">{row.team_name}</td>
                 <td className="px-4 py-2 text-gray-600">{row.group_number}</td>
                 <td className="px-4 py-2 text-gray-600">{row.registered_date.slice(0, 2) + '/' + row.registered_date.slice(2, 4)}</td>
@@ -54,6 +56,7 @@ export default function ScoreBoard({ scoreboard }) {
         <table className="min-w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-100">
+            <th className="px-4 py-2 text-left text-gray-600 font-medium">Rank</th>
               <th className="px-4 py-2 text-left text-gray-600 font-medium">Team</th>
               <th className="px-4 py-2 text-left text-gray-600 font-medium">Group Number</th>
               <th className="px-4 py-2 text-left text-gray-600 font-medium">Registered Date</th>
@@ -63,8 +66,9 @@ export default function ScoreBoard({ scoreboard }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {group2Scoreboard.map((row) => (
-              <tr key={row.team_name} className="hover:bg-gray-100 transition duration-300">
+            {group2Scoreboard.map((row, index) => (
+              <tr key={row.team_name} className={`hover:bg-gray-100 transition duration-300 ${index < 4 ? 'bg-yellow-100' : ''}`}>
+                <td className="px-4 py-2 text-gray-800">{index + 1}</td>
                 <td className="px-4 py-2 text-gray-800">{row.team_name}</td>
                 <td className="px-4 py-2 text-gray-600">{row.group_number}</td>
                 <td className="px-4 py-2 text-gray-600">{row.registered_date.slice(0, 2) + '/' + row.registered_date.slice(2, 4)}</td>

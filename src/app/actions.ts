@@ -28,9 +28,13 @@ export async function clearAllData(
         await trx`
         TRUNCATE TABLE scoreboard
         `;
+
+        await trx`
+        TRUNCATE TABLE logs
+        `;
       });
-  
       // Revalidate and return success message
+
       revalidatePath("/");
       return { message: "Successfully cleared all data!" };
     } catch (e) {
@@ -102,9 +106,17 @@ export async function addTeams(
       });
   
       // Revalidate and return success message
+      await sql`
+      INSERT INTO logs (timestamp, type, contents, message)
+      VALUES (NOW(), 'addTeams', ${data.teams_info}, 'Success')
+        `;
       revalidatePath("/");
       return { message: "All teams added successfully!" };
     } catch (e) {
+        await sql`
+      INSERT INTO logs (timestamp, type, contents, message)
+      VALUES (NOW(), 'addTeams', ${data.teams_info}, ${`Error: ${e.message}`})
+        `;
       revalidatePath("/");
       return { message: `Error: ${e.message}` };
     }
@@ -152,7 +164,7 @@ export async function addTeams(
           // If team1_name > team2_name, swap to maintain consistent ordering
           if (team1_name > team2_name) {
             [team1_name, team2_name] = [team2_name, team1_name]; 
-            [team1_score, team2_score] = [team2_score, team2_score];
+            [team1_score, team2_score] = [team2_score, team1_score];
           }
   
           const team1_score_number = parseInt(team1_score, 10);
@@ -232,11 +244,18 @@ export async function addTeams(
           `;
         }
       });
-  
+      await sql`
+      INSERT INTO logs (timestamp, type, contents, message)
+      VALUES (NOW(), 'addMatches', ${data.matches_info}, 'Success')
+        `;
       revalidatePath("/");
       return { message: `Added matches successfully.` };
   
     } catch (e) {
+        await sql`
+      INSERT INTO logs (timestamp, type, contents, message)
+      VALUES (NOW(), 'addMatches', ${data.matches_info}, ${`Error: ${e.message}`})
+        `;
       revalidatePath("/");
       return { message: e.message || "Failed to add matches" };
     }
@@ -311,12 +330,19 @@ export async function addTeams(
             `;
           });
     
-
+        await sql`
+        INSERT INTO logs (timestamp, type, contents, message)
+        VALUES (NOW(), 'deleteMatches', ${`Match between ${team1_name} and ${team2_name}`}, 'Success')
+        `;
       revalidatePath("/");
-      return { message: `Done` };
+      return { message: `Deleted match successfully.` };
     } catch (e) {
+        await sql`
+        INSERT INTO logs (timestamp, type, contents, message)
+        VALUES (NOW(), 'deleteMatches', ${`Match between ${team1_name} and ${team2_name}`}, ${`Error: ${e.message}`})
+        `;
       revalidatePath("/");
-      return { message: "Oops" };
+      return { message: e.message || "Failed to delete match." };
     }
   }
 
@@ -416,11 +442,18 @@ export async function addTeams(
             `;
           });
     
-
+          await sql`
+          INSERT INTO logs (timestamp, type, contents, message)
+          VALUES (NOW(), 'editMatch', ${`Match between ${team1_name} and ${team2_name} from ${team1_score_number}-${team2_score_number} to ${team1_score_new_number}-${team2_score_new_number}`}, 'Success')
+          `;
       revalidatePath("/");
       return { message: `Successfully edited match!` };
     } catch (e) {
+        await sql`
+          INSERT INTO logs (timestamp, type, contents, message)
+          VALUES (NOW(), 'editMatch', ${`Match between ${team1_name} and ${team2_name} from ${team1_score_number}-${team2_score_number} to ${team1_score_new_number}-${team2_score_new_number}`}, ${`Error: ${e.message}`})
+          `;
       revalidatePath("/");
-      return { message: "Oops" };
+      return { message: e.message || "Failed to edit match." };
     }
   }
